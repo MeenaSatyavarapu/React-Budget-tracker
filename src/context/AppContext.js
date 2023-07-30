@@ -1,0 +1,57 @@
+import { createContext, useReducer } from "react";
+
+const AppReducer = (state, action) => {
+	//We're checking the type of the action
+	// (which we get from the action variable) 
+	switch (action.type) {
+		case 'ADD_EXPENSE':
+			//Returning a new state object with the new expense taking from the payload
+			// (which we get from the action variable)
+			return{
+				...state,
+				expenses: [...state.expenses, action.payload],
+			};
+			case 'DELETE_EXPENSE':
+			return {
+				...state,
+				expenses: state.expenses.filter(
+					(expense) => expense.id !== action.payload
+				),
+			};
+			case 'SET_BUDGET':
+			return {
+				...state,
+				budget: action.payload,
+			};
+		default:
+			return state;
+	}
+};
+
+const initialState = {
+	budget: 3000,
+	expenses: [
+		{ id: 12, name: 'shopping', cost: 40 },
+		{ id: 13, name: 'holiday', cost: 400 },
+		{ id: 14, name: 'car service', cost: 50 },
+	],
+};
+
+export const AppContext = createContext();
+
+
+export const AppProvider = (props) => {
+	const [state, dispatch] = useReducer(AppReducer, initialState);
+
+	return (
+		<AppContext.Provider
+			value={{
+				budget: state.budget,
+				expenses: state.expenses,
+				dispatch,
+			}}
+		>
+			{props.children}
+		</AppContext.Provider>
+	);
+};
